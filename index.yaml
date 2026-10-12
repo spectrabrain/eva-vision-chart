@@ -9,7 +9,7 @@ entries:
     name: eva-vision
     type: application
     urls:
-    - https://raw.githubusercontent.com/mellerikat/eva-vision/chartmuseum/eva-vision-3.3.0.tgz
+    - https://raw.githubusercontent.com/spectrabrain/eva-vision-chart/chartmuseum/eva-vision-3.3.0.tgz
     version: 3.3.0
   - apiVersion: v2
     appVersion: 3.2.0
@@ -19,7 +19,7 @@ entries:
     name: eva-vision
     type: application
     urls:
-    - https://raw.githubusercontent.com/mellerikat/eva-vision/chartmuseum/eva-vision-3.2.0.tgz
+    - https://raw.githubusercontent.com/spectrabrain/eva-vision-chart/chartmuseum/eva-vision-3.2.0.tgz
     version: 3.2.0
   - apiVersion: v2
     appVersion: 3.1.0
@@ -29,7 +29,7 @@ entries:
     name: eva-vision
     type: application
     urls:
-    - https://raw.githubusercontent.com/mellerikat/eva-vision/chartmuseum/eva-vision-3.1.0.tgz
+    - https://raw.githubusercontent.com/spectrabrain/eva-vision-chart/chartmuseum/eva-vision-3.1.0.tgz
     version: 3.1.0
   - apiVersion: v2
     appVersion: 3.0.0
@@ -39,7 +39,7 @@ entries:
     name: eva-vision
     type: application
     urls:
-    - https://raw.githubusercontent.com/mellerikat/eva-vision/chartmuseum/eva-vision-2.0.5.tgz
+    - https://raw.githubusercontent.com/spectrabrain/eva-vision-chart/chartmuseum/eva-vision-2.0.5.tgz
     version: 2.0.5
   - apiVersion: v2
     appVersion: 3.0.0
