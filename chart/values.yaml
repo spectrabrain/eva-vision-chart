@@ -24,7 +24,7 @@ imagePullSecrets:
 # 어떤 모델을 받을지는 appConfig.load_models / appConfig.embedding.enabledModels 로 정해진다.
 # 서버에서 지원하지 않는 모델은 그 목록에서 이름을 빼면 받지도 서빙하지도 않는다.
 modelSource:
-  type: s3        # s3 | harbor | none (none: 이미지/볼륨에 이미 있는 model_dir 사용)
+  type: none      # s3 | harbor | none (none: 이미지/볼륨에 이미 있는 model_dir 사용)
 
 s3:
   modelUri: "s3://spectrabrain-eva-vision/model_dir"
@@ -49,7 +49,7 @@ harbor:
 # 모델 캐시: /app/model_dir 를 PVC 에 둬서 Pod 재시작 후에도 가중치(~7GB)를 다시 받지 않는다.
 # 기본 켜짐. 끄면 재시작마다 전체를 다시 받는다 (ephemeral-storage 를 충분히 줄 것).
 modelCache:
-  enabled: true
+  enabled: false
   existingClaim: ""   # 기존 PVC 를 쓰려면 이름 지정
   storageClass: ""    # "" 이면 default StorageClass
   size: 20Gi

@@ -23,7 +23,7 @@ imagePullSecrets:
 
 # 모델 가중치도 Harbor 에서 받는다.
 modelSource:
-  type: harbor
+  type: none
 
 harbor:
   registry: 10.159.56.124:8090

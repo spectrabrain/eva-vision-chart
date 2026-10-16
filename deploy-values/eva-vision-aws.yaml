@@ -137,7 +137,7 @@ appConfig:
 
 # 모델 캐시 (/app/model_dir). 로그 PVC 와 같은 StorageClass 를 쓴다.
 modelCache:
-  enabled: true
+  enabled: false
   storageClass: "eva-vision-sc-bs"
   size: 20Gi
 
