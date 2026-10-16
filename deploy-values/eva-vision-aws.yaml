@@ -4,7 +4,7 @@
 image:
   repository: 211722900905.dkr.ecr.ap-northeast-2.amazonaws.com/spectrabrain/eva-vision
   pullPolicy: Always
-  tag: 3.3.0rc1
+  tag: 3.2.1
 
 runtimeClassName: ""
 
