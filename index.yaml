@@ -12,6 +12,16 @@ entries:
     - https://raw.githubusercontent.com/spectrabrain/eva-vision-chart/chartmuseum/eva-vision-3.3.0.tgz
     version: 3.3.0
   - apiVersion: v2
+    appVersion: 3.2.1
+    created: "2026-10-16T16:15:11.037617+09:00"
+    description: A Helm chart for Eva Vision Solution (TorchServe + Proxy)
+    digest: 3facfd12e8c2604b9e7d0918ab30dbf1157f09e0cb72ae92df95d515e9cdbebe
+    name: eva-vision
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/spectrabrain/eva-vision-chart/chartmuseum/eva-vision-3.2.1.tgz
+    version: 3.2.1
+  - apiVersion: v2
     appVersion: 3.2.0
     created: "2026-10-12T17:33:56.80101794+09:00"
     description: A Helm chart for Eva Vision Solution (TorchServe + Proxy)
@@ -221,4 +231,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/mellerikat/eva-vision/chartmuseum/eva-vision-1.0.0.tgz
     version: 1.0.0
-generated: "2026-10-12T17:33:56.641598962+09:00"
+generated: "2026-10-16T16:15:11.037617+09:00"
