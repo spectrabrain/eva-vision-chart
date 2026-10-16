@@ -13,9 +13,9 @@ entries:
     version: 3.3.0
   - apiVersion: v2
     appVersion: 3.2.1
-    created: "2026-10-16T16:52:16.554781+09:00"
+    created: "2026-10-16T17:01:30.113418+09:00"
     description: A Helm chart for Eva Vision Solution (TorchServe + Proxy)
-    digest: 363729f84ae381405f70d679fbf4ddc1b641bdce0082a7d8b3340a0a227142c5
+    digest: 2be51e8be6e38a50bbe936c6e59d98c8776292e029b04574cbc4ff45242286bb
     name: eva-vision
     type: application
     urls:
@@ -231,4 +231,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/mellerikat/eva-vision/chartmuseum/eva-vision-1.0.0.tgz
     version: 1.0.0
-generated: "2026-10-16T16:52:16.554781+09:00"
+generated: "2026-10-16T17:01:30.113418+09:00"
