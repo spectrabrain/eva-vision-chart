@@ -2,9 +2,9 @@
 
 # 1. Image Config
 image:
-  repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
+  repository: 211722900905.dkr.ecr.ap-northeast-2.amazonaws.com/spectrabrain/eva-vision
   pullPolicy: Always
-  tag: 3.2.1
+  tag: 3.3.0rc3
 
 runtimeClassName: ""
 
@@ -69,10 +69,13 @@ appConfig:
   metrics_interval: 600
   install_py_dep_per_model: true
   default_workers_per_model: 1
+  dartf:
+    # Node-local engines survive Pod replacement; reserve about 1.2Gi per key.
+    engineCacheHostPath: "/var/lib/eva-vision/dartf-engines"
   disable_token_authorization: true
 
   # Models to Load
-  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,RT-DETRV2.mar,Embedding.mar"
+  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,RT-DETRV2.mar,DARTF.mar,DARTF-light.mar,Embedding.mar"
 
   embedding:
     enabledModels: "DINOv2Small,E5EmbeddingSmall,Qwen3VLEmbed2B"
@@ -124,6 +127,17 @@ appConfig:
         maxWorkers: 1
         batchSize: 1
         maxBatchDelay: 150
+        # Warmup in initialize compiles the box head (~90s on RTX 5090)
+        startupTimeout: 600
+    DARTF-light:
+      "1.0":
+        defaultVersion: true
+        marName: "DARTF-light.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
+        startupTimeout: 600
     Embedding:
       "1.0":
         defaultVersion: true
@@ -137,7 +151,7 @@ appConfig:
 
 # 모델 캐시 (/app/model_dir). 로그 PVC 와 같은 StorageClass 를 쓴다.
 modelCache:
-  enabled: false
+  enabled: true
   storageClass: "eva-vision-sc-bs"
   size: 20Gi
 

@@ -2,19 +2,17 @@
 
 # 1. Image Config
 image:
-  repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
+  repository: 211722900905.dkr.ecr.ap-northeast-2.amazonaws.com/spectrabrain/eva-vision
   pullPolicy: IfNotPresent
-  tag: 3.2.1
+  tag: 3.3.0rc3
 
 runtimeClassName: "nvidia" # containerd ="nvidia" , docker runtime = ""
 
 imagePullSecrets:
   enabled: true
-  create: true
+  create: false
 
-  name: ""
-
-  account: "339713051385"
+  account: "211722900905"
   region: "ap-northeast-2"
 
   password: ""
@@ -103,11 +101,13 @@ appConfig:
   metrics_interval: 600
   install_py_dep_per_model: true
   default_workers_per_model: 1
-  dartfWorkers: 2
+  dartf:
+    # Node-local engines survive Pod replacement; reserve about 1.2Gi per key.
+    engineCacheHostPath: "/var/lib/eva-vision/dartf-engines"
   disable_token_authorization: true
 
   # Models to Load
-  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,RT-DETRV2.mar,Embedding.mar"
+  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,RT-DETRV2.mar,DARTF.mar,DARTF-light.mar,Embedding.mar"
 
   embedding:
     enabledModels: "DINOv2Small,E5EmbeddingSmall,Qwen3VLEmbed2B"
@@ -141,7 +141,7 @@ appConfig:
         marName: "RT-DETRV2.mar"
         minWorkers: 1
         maxWorkers: 1
-        batchSize: 2
+        batchSize: 1
         maxBatchDelay: 150
     LLMDet:
       "1.0":
@@ -155,10 +155,21 @@ appConfig:
       "1.0":
         defaultVersion: true
         marName: "DARTF.mar"
-        minWorkers: 2
-        maxWorkers: 2
+        minWorkers: 1
+        maxWorkers: 1
         batchSize: 1
         maxBatchDelay: 150
+        # Warmup in initialize compiles the box head (~90s on RTX 5090)
+        startupTimeout: 600
+    DARTF-light:
+      "1.0":
+        defaultVersion: true
+        marName: "DARTF-light.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
+        startupTimeout: 600
     Embedding:
       "1.0":
         defaultVersion: true
@@ -169,29 +180,3 @@ appConfig:
         maxBatchDelay: 150
         responseTimeout: 600
         startupTimeout: 1200
-
-# Persistence (Log Storage)
-persistence:
-  enabled: false
-
-  # 기존 PVC 재사용 시 이름 지정 (우선순위 가장 높음)
-  existingClaim: ""
-
-  # 새 PVC 생성 시 설정 (existingClaim 비어있을 때만 사용)
-  storageClass: ""        # "" 이면 default StorageClass 사용
-  size: 20Gi
-  accessModes:
-    - ReadWriteOnce
-
-  # Pod mount
-  mountPath: "/app/logs"
-  subPath: ""
-
-  # PVC 메타데이터
-  annotations: {}
-  labels: {}
-
-  # TorchServe internal paths
-  modelStore: "model-store"  # 컨테이너 내부 경로
-  tmpDir: "tmp"
-  logLocation: "logs"        # TorchServe 입장에서의 log 디렉터리 (컨테이너 경로 기준)

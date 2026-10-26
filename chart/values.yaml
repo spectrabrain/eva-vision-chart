@@ -2,9 +2,9 @@
 
 # 1. Image Config
 image:
-  repository: 339713051385.dkr.ecr.ap-northeast-2.amazonaws.com/mellerikat/release/eva-vision
+  repository: 211722900905.dkr.ecr.ap-northeast-2.amazonaws.com/spectrabrain/eva-vision
   pullPolicy: Always
-  tag: 3.2.1
+  tag: 3.3.0rc3
 
 runtimeClassName: "nvidia"
 
@@ -13,9 +13,7 @@ imagePullSecrets:
   create: false
   ExistingSecret: "eva-vision-regcred"
 
-  name: ""
-
-  account: "339713051385"
+  account: "211722900905"
   region: "ap-northeast-2"
 
   password: ""
@@ -24,7 +22,7 @@ imagePullSecrets:
 # 어떤 모델을 받을지는 appConfig.load_models / appConfig.embedding.enabledModels 로 정해진다.
 # 서버에서 지원하지 않는 모델은 그 목록에서 이름을 빼면 받지도 서빙하지도 않는다.
 modelSource:
-  type: none      # s3 | harbor | none (none: 이미지/볼륨에 이미 있는 model_dir 사용)
+  type: s3        # s3 | harbor | none (none: 이미지/볼륨에 이미 있는 model_dir 사용)
 
 s3:
   modelUri: "s3://spectrabrain-eva-vision/model_dir"
@@ -49,7 +47,7 @@ harbor:
 # 모델 캐시: /app/model_dir 를 PVC 에 둬서 Pod 재시작 후에도 가중치(~7GB)를 다시 받지 않는다.
 # 기본 켜짐. 끄면 재시작마다 전체를 다시 받는다 (ephemeral-storage 를 충분히 줄 것).
 modelCache:
-  enabled: false
+  enabled: true
   existingClaim: ""   # 기존 PVC 를 쓰려면 이름 지정
   storageClass: ""    # "" 이면 default StorageClass
   size: 20Gi
@@ -130,6 +128,8 @@ affinity: {}
 # TorchServe / App 설정
 appConfig:
   # JVM Args
+  jvmXmx: "2g"
+  jvmMaxDirectMemory: "2g"
   vmargs: "-Xmx${TORCHSERVE_JVM_XMX} -XX:MaxDirectMemorySize=${TORCHSERVE_JVM_MAX_DIRECT_MEMORY} -XX:+ExitOnOutOfMemoryError -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=logs -Dlog4j.configurationFile=eva_ts/log4j2.xml"
 
   # Network
@@ -141,18 +141,23 @@ appConfig:
 
   # Metrics / Flags
   enable_envvars_config: true
-  enable_metrics_api: true
+  enable_metrics_api: false
   metrics_format: "prometheus"
   metrics_interval: 600
   number_of_netty_threads: 1
   worker_retry_timeout_sec: 600
   install_py_dep_per_model: true
   default_workers_per_model: 1
-  dartfWorkers: 1
+  dartf:
+    # 이 GPU 용 엔진이 이미지에 없으면 기동 시 빌드한다 (RTX 5090 기준 약 7분).
+    engineBuild: true
+    # 빌드한 엔진을 보관할 노드 경로. 비우면 pod 안에만 저장되어 재시작마다 다시 빌드한다.
+    # 예: /var/lib/eva-vision/dartf-engines (같은 노드의 pod 들은 lock 으로 한 번만 빌드)
+    engineCacheHostPath: ""
   disable_token_authorization: true
 
   # Models to Load
-  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,RT-DETRV2.mar,Embedding.mar"
+  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,RT-DETRV2.mar,DARTF.mar,DARTF-light.mar,Embedding.mar"
 
   embedding:
     enabledModels: "DINOv2Small,E5EmbeddingSmall,Qwen3VLEmbed2B"
@@ -200,10 +205,22 @@ appConfig:
       "1.0":
         defaultVersion: true
         marName: "DARTF.mar"
+        # worker 범위의 단일 출처. DARTF_WORKERS/DARTF_MAX_WORKERS env(proxy 스케일링 상한)도 여기서 만든다.
         minWorkers: 1
         maxWorkers: 1
         batchSize: 1
         maxBatchDelay: 150
+        # Warmup in initialize compiles the box head (~90s on RTX 5090)
+        startupTimeout: 600
+    DARTF-light:
+      "1.0":
+        defaultVersion: true
+        marName: "DARTF-light.mar"
+        minWorkers: 1
+        maxWorkers: 1
+        batchSize: 1
+        maxBatchDelay: 150
+        startupTimeout: 600
     Embedding:
       "1.0":
         defaultVersion: true

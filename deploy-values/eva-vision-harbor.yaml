@@ -1,6 +1,5 @@
-# 폐쇄망(Harbor) 오버레이. 환경별 values 뒤에 추가로 지정해 쓴다:
+# 폐쇄망(Harbor) values. 환경별 values(aws/k3s)와 별개로 단독으로 쓴다:
 #   helm upgrade --install eva-vision deploy/helm/chart \
-#     -f deploy/helm/values/eva-vision-k3s.yaml \
 #     -f deploy/helm/values/eva-vision-harbor.yaml
 # 아래 값은 개발용 Harbor(http://10.159.56.124:8090) 기준 예시다. 환경에 맞게 바꾼다.
 #
@@ -13,7 +12,7 @@
 # 이미지: Harbor 로 옮긴 경로
 image:
   repository: 10.159.56.124:8090/eva/eva-vision
-  tag: 3.2.1
+  tag: 3.3.0rc3
 
 # 이미지 pull 용 Secret 은 위에서 만든 것을 쓴다 (차트의 ECR 전용 Secret 생성은 쓰지 않는다).
 imagePullSecrets:
@@ -23,7 +22,7 @@ imagePullSecrets:
 
 # 모델 가중치도 Harbor 에서 받는다.
 modelSource:
-  type: none
+  type: harbor
 
 harbor:
   registry: 10.159.56.124:8090

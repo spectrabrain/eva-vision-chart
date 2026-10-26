@@ -1,3 +1,11 @@
+{{- $modelSource := .Values.modelSource.type }}
+{{- if not (has $modelSource (list "none" "s3" "harbor")) }}
+{{- fail "modelSource.type must be none, s3 or harbor" }}
+{{- end }}
+{{- /* DARTF worker 범위의 단일 출처는 appConfig.models.<name>."1.0" 의 min/maxWorkers 이다.
+       proxy 스케일링 상한(DARTF_*_WORKERS env)도 여기서 만든다. */ -}}
+{{- $dartf := dig "DARTF" "1.0" dict .Values.appConfig.models }}
+{{- $dartfLight := dig "DARTF-light" "1.0" dict .Values.appConfig.models }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -152,8 +160,24 @@ spec:
                   key: HARBOR_PASSWORD
             {{- end }}
             {{- end }}
+            {{- with $dartf }}
             - name: DARTF_WORKERS
-              value: {{ .Values.appConfig.dartfWorkers | quote }}
+              value: {{ .minWorkers | quote }}
+            - name: DARTF_MAX_WORKERS
+              value: {{ .maxWorkers | default .minWorkers | quote }}
+            {{- end }}
+            {{- with $dartfLight }}
+            - name: DARTF_LIGHT_WORKERS
+              value: {{ .minWorkers | quote }}
+            - name: DARTF_LIGHT_MAX_WORKERS
+              value: {{ .maxWorkers | default .minWorkers | quote }}
+            {{- end }}
+            - name: DARTF_ENGINE_BUILD
+              value: {{ .Values.appConfig.dartf.engineBuild | quote }}
+            {{- if .Values.appConfig.dartf.engineCacheHostPath }}
+            - name: DARTF_ENGINE_CACHE
+              value: /var/cache/dartf-engines
+            {{- end }}
             - name: TORCHSERVE_JVM_MAX_DIRECT_MEMORY
               value: {{ .Values.appConfig.jvmMaxDirectMemory | quote }}
             {{- if ne (toString .Values.gpu.cudaVisibleDevices) "" }}
@@ -185,6 +209,10 @@ spec:
               readOnly: true
             - name: dshm
               mountPath: /dev/shm
+            {{- if .Values.appConfig.dartf.engineCacheHostPath }}
+            - name: dartf-engines
+              mountPath: /var/cache/dartf-engines
+            {{- end }}
             {{- if .Values.gpu.mps.enabled }}
             - name: nvidia-mps
               mountPath: {{ .Values.gpu.mps.pipeDirectory | quote }}
@@ -211,6 +239,12 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: "2Gi"
+        {{- if .Values.appConfig.dartf.engineCacheHostPath }}
+        - name: dartf-engines
+          hostPath:
+            path: {{ .Values.appConfig.dartf.engineCacheHostPath | quote }}
+            type: DirectoryOrCreate
+        {{- end }}
         {{- if .Values.gpu.mps.enabled }}
         - name: nvidia-mps
           emptyDir: {}
