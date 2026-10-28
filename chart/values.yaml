@@ -4,7 +4,7 @@
 image:
   repository: 211722900905.dkr.ecr.ap-northeast-2.amazonaws.com/spectrabrain/eva-vision
   pullPolicy: Always
-  tag: 3.3.0rc3
+  tag: 3.3.0
 
 runtimeClassName: "nvidia"
 
@@ -157,7 +157,7 @@ appConfig:
   disable_token_authorization: true
 
   # Models to Load
-  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,RT-DETRV2.mar,DARTF.mar,DARTF-light.mar,Embedding.mar"
+  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,RT-DETRV2.mar,DARTF-light.mar,Embedding.mar"
 
   embedding:
     enabledModels: "DINOv2Small,E5EmbeddingSmall,Qwen3VLEmbed2B"
@@ -207,7 +207,7 @@ appConfig:
         marName: "DARTF.mar"
         # worker 범위의 단일 출처. DARTF_WORKERS/DARTF_MAX_WORKERS env(proxy 스케일링 상한)도 여기서 만든다.
         minWorkers: 1
-        maxWorkers: 1
+        maxWorkers: 2
         batchSize: 1
         maxBatchDelay: 150
         # Warmup in initialize compiles the box head (~90s on RTX 5090)
@@ -217,7 +217,7 @@ appConfig:
         defaultVersion: true
         marName: "DARTF-light.mar"
         minWorkers: 1
-        maxWorkers: 1
+        maxWorkers: 3
         batchSize: 1
         maxBatchDelay: 150
         startupTimeout: 600
@@ -232,6 +232,24 @@ appConfig:
         responseTimeout: 600
         startupTimeout: 1200
 
+
+# Worker 스케일링 (proxy: camera_to_workers 표 + 카메라 주기 환산)
+scaling:
+  # /sync 요청이 카메라 요청 주기를 주지 않을 때 쓰는 기본 주기(초). env CAMERA_INTERVAL_SEC.
+  # camera_to_workers 표는 2초 기준으로 측정되었다. 주기가 길면 카메라 수를 2초 기준으로
+  # 환산해 같은 표를 조회하고, 2초보다 짧은 값은 2초로 취급한다.
+  # LATENCY_BUDGET_MS 기본값(주기 x 1000)도 이 값을 따른다.
+  cameraIntervalSec: 5
+
+  # 모델별 camera_to_workers 표 오버라이드. 비워 두면 proxy/config.py 기본 표를 쓴다.
+  # 지정한 모델은 표 전체가 교체되며 constraints(max_workers 등)는 바뀌지 않는다.
+  # 값이 잘못되면(겹치는 구간, workers < 1, 알 수 없는 모델 등) proxy 가 기동 시 실패한다.
+  # 예)
+  # cameraToWorkers:
+  #   OmDet:
+  #     - {min: 1, max: 20, workers: 1}
+  #     - {min: 21, max: 100, workers: 2}
+  cameraToWorkers: {}
 
 # Persistence (Log Storage)
 persistence:

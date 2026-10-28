@@ -172,6 +172,12 @@ spec:
                   key: HARBOR_PASSWORD
             {{- end }}
             {{- end }}
+            - name: CAMERA_INTERVAL_SEC
+              value: {{ .Values.scaling.cameraIntervalSec | quote }}
+            {{- with .Values.scaling.cameraToWorkers }}
+            - name: MODEL_PROFILE_OVERRIDES
+              value: {{ toJson . | quote }}
+            {{- end }}
             {{- with $dartf }}
             - name: DARTF_WORKERS
               value: {{ .minWorkers | quote }}

@@ -4,7 +4,7 @@
 image:
   repository: 211722900905.dkr.ecr.ap-northeast-2.amazonaws.com/spectrabrain/eva-vision
   pullPolicy: Always
-  tag: 3.3.0rc3
+  tag: 3.3.0
 
 runtimeClassName: ""
 
@@ -75,7 +75,7 @@ appConfig:
   disable_token_authorization: true
 
   # Models to Load
-  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,RT-DETRV2.mar,DARTF.mar,DARTF-light.mar,Embedding.mar"
+  load_models: "Owl-v2.mar,ig.mar,OmDet.mar,LLMDet.mar,RT-DETRV2.mar,DARTF-light.mar,Embedding.mar"
 
   embedding:
     enabledModels: "DINOv2Small,E5EmbeddingSmall,Qwen3VLEmbed2B"
@@ -124,7 +124,7 @@ appConfig:
         defaultVersion: true
         marName: "DARTF.mar"
         minWorkers: 1
-        maxWorkers: 1
+        maxWorkers: 2
         batchSize: 1
         maxBatchDelay: 150
         # Warmup in initialize compiles the box head (~90s on RTX 5090)
@@ -134,7 +134,7 @@ appConfig:
         defaultVersion: true
         marName: "DARTF-light.mar"
         minWorkers: 1
-        maxWorkers: 1
+        maxWorkers: 3
         batchSize: 1
         maxBatchDelay: 150
         startupTimeout: 600

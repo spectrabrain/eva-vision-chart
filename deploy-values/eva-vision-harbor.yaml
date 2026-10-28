@@ -12,7 +12,7 @@
 # 이미지: Harbor 로 옮긴 경로
 image:
   repository: 10.159.56.124:8090/eva/eva-vision
-  tag: 3.3.0rc3
+  tag: 3.3.0
 
 # 이미지 pull 용 Secret 은 위에서 만든 것을 쓴다 (차트의 ECR 전용 Secret 생성은 쓰지 않는다).
 imagePullSecrets:
