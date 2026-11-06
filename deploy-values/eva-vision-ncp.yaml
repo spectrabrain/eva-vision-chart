@@ -1,5 +1,5 @@
 image:
-	repository: 211722900905.dkr.ecr.ap-northeast-2.amazonaws.com/spectrabrain/eva-vision
+  repository: 211722900905.dkr.ecr.ap-northeast-2.amazonaws.com/spectrabrain/eva-vision
   tag: 3.3.0
  
 modelSource:
