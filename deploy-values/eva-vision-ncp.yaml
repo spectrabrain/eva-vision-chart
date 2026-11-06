@@ -1,0 +1,34 @@
+image:
+	repository: 211722900905.dkr.ecr.ap-northeast-2.amazonaws.com/spectrabrain/eva-vision
+  tag: 3.3.0
+ 
+modelSource:
+  type: s3      
+
+modelCache:
+  storageClass: nks-block-storage
+
+s3:
+  modelUri: "s3://spectrabrain-eva-vision/model_dir"
+  region: "ap-northeast-2"
+  existingSecret: "eva-vision-s3" 
+ 
+resources:
+  limits:
+    memory: "36Gi"
+    cpu: "8" # ncp: 8
+    nvidia.com/gpu: 1
+  requests:
+    memory: "36Gi"
+    cpu: "8" # ncp: 8
+    nvidia.com/gpu: 1
+    
+gpu:
+  count: 1
+  cudaVisibleDevices: ""
+  mig:
+    resourceName: "" # Example: nvidia.com/mig-1g.24gb
+  mps:
+    enabled: false
+    pipeDirectory: "/tmp/nvidia-mps"
+    logDirectory: "/tmp/nvidia-mps-log"
